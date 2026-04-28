@@ -1,0 +1,207 @@
+using System;
+using System.Collections.Generic;
+using IdxZero.Base.States;
+using Zenject;
+
+namespace #NAMESPACE#
+{
+    public enum #SCRIPTNAME#Command
+    {
+        NULL
+    }
+
+    public enum #SCRIPTNAME#State
+    {
+        NULL
+    }
+
+    public class #SCRIPTNAME#ConditionManager
+    {
+        private readonly Dictionary<#SCRIPTNAME#StateTransition, #SCRIPTNAME#State> _transitions;
+        private #SCRIPTNAME#State _currentState { get; set; }
+
+        public #SCRIPTNAME#ConditionManager()
+        {
+            _transitions = new Dictionary<#SCRIPTNAME#StateTransition, #SCRIPTNAME#State>
+            {
+                {new #SCRIPTNAME#StateTransition(#SCRIPTNAME#State.NULL, #SCRIPTNAME#Command.NULL),#SCRIPTNAME#State.NULL},
+            };
+        }
+
+        public void SetStartState(#SCRIPTNAME#State startState)
+        {
+            _currentState = startState;
+        }
+
+        public #SCRIPTNAME#State MoveNext(#SCRIPTNAME#Command command)
+        {
+            #SCRIPTNAME#State state = GetNext(command);
+            if (state != #SCRIPTNAME#State.NULL)
+                _currentState = GetNext(command);
+            return state;
+        }
+
+        private #SCRIPTNAME#State GetNext(#SCRIPTNAME#Command command)
+        {
+            #SCRIPTNAME#StateTransition transition = new #SCRIPTNAME#StateTransition(_currentState, command);
+            if (!_transitions.TryGetValue(transition, out #SCRIPTNAME#State nextState))
+                throw new Exception("Invalid transition: " + _currentState + " -> " + command);
+            return nextState;
+        }
+    }
+
+    public class #SCRIPTNAME#StateTransition : StateTransition<#SCRIPTNAME#State, #SCRIPTNAME#Command>
+    {
+        public #SCRIPTNAME#StateTransition(#SCRIPTNAME#State currentState, #SCRIPTNAME#Command currentCommand) : base(currentState, currentCommand)
+        {
+        }
+    }
+
+    public class #SCRIPTNAME#StatesFactory
+    {
+        private readonly Dictionary<#SCRIPTNAME#State, PlaceholderFactory<IBaseState>> _factories;
+
+        public #SCRIPTNAME#StatesFactory(#SCRIPTNAME#NullState.Factory nullStateFactory)
+        {
+            _factories = new Dictionary<#SCRIPTNAME#State, PlaceholderFactory<IBaseState>>
+            {
+                {#SCRIPTNAME#State.NULL,nullStateFactory}
+            };
+        }
+
+        public IBaseState GetState(#SCRIPTNAME#State state)
+        {
+            if (_factories.TryGetValue(state, out var factory))
+            {
+                return factory.Create();
+            }
+            throw new System.Exception($"No state factory with state {state}");
+        }
+    }
+
+    public class #SCRIPTNAME#StatesController : StateController, IDisposable, IInitializable
+    {
+        private readonly SignalBus _signals;
+
+        private readonly #SCRIPTNAME#ConditionManager _conditionManager;
+
+        private readonly #SCRIPTNAME#StatesFactory _statesFactory;
+
+        public #SCRIPTNAME#StatesController(#SCRIPTNAME#ConditionManager conditionManager,
+            SignalBus signals,
+            #SCRIPTNAME#StatesFactory statesFactory)
+        {
+            _conditionManager = conditionManager;
+            _signals = signals;
+            _statesFactory = statesFactory;
+
+            Subscribe();
+        }
+
+        public void Initialize()
+        {
+            SetStartState();
+        }
+
+        private void SetStartState()
+        {
+            _conditionManager.SetStartState((#SCRIPTNAME#State)0);
+            SetNextState((#SCRIPTNAME#State)0);
+        }
+
+        private void SetNextStateByCommand(#SCRIPTNAME#Command command)
+        {
+            #SCRIPTNAME#State state = _conditionManager.MoveNext(command);
+            if (state != #SCRIPTNAME#State.NULL)
+                SetNextState(state);
+        }
+
+        private void SetNextState(#SCRIPTNAME#State gameState)
+        {
+            IBaseState baseState = _statesFactory.GetState(gameState);
+            SetState(baseState);
+        }
+
+        private void Subscribe()
+        {
+        }
+
+        private void Unsubscribe()
+        {
+        }
+
+        public void Dispose()
+        {
+            Unsubscribe();
+        }
+    }
+
+    public class #SCRIPTNAME#NullState : IBaseState
+    {
+        public void OnEnter(Action releasePreviousStateCallback)
+        {
+        }
+
+        public void OnExit()
+        {
+        }
+
+        public void OnRelease()
+        {
+        }
+
+        #region Factory
+
+        public class Factory : PlaceholderFactory<IBaseState>
+        {
+        }
+
+        #endregion Factory
+    }
+
+    public class #SCRIPTNAME#StatesSignals
+    {
+        public class NullSignal{}
+    }
+
+    public class #SCRIPTNAME#StatesInstaller : Installer<#SCRIPTNAME#StatesInstaller>
+    {
+        public override void InstallBindings()
+        {
+            InstallController();
+            InstallStates();
+            InstallSignals();
+        }
+
+        private void InstallController()
+        {
+            Container.Bind(typeof(IInitializable),typeof(IDisposable))
+               .To<#SCRIPTNAME#StatesController>()
+               .AsSingle();
+
+            Container.Bind<#SCRIPTNAME#ConditionManager>()
+                .ToSelf()
+                .AsSingle()
+                .WhenInjectedInto<#SCRIPTNAME#StatesController>();
+        }
+
+        private void InstallStates()
+        {
+            InstallFactory<#SCRIPTNAME#NullState,#SCRIPTNAME#NullState.Factory>();
+            Container.Bind<#SCRIPTNAME#StatesFactory>().ToSelf().AsSingle();
+        }
+        
+        private void InstallFactory<T,TFactory>() where T : IBaseState
+                                                 where TFactory : PlaceholderFactory<IBaseState>
+        {
+            Container.BindFactory<IBaseState, TFactory>()
+                            .To<T>()
+                            .WhenInjectedInto<#SCRIPTNAME#StatesFactory>();
+        }
+
+        private void InstallSignals()
+        {
+            Container.DeclareSignal<#SCRIPTNAME#StatesSignals.NullSignal>().OptionalSubscriber();
+        }
+    }
+}

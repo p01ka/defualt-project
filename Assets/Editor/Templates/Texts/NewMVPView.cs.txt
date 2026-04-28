@@ -1,0 +1,116 @@
+using System;
+using IdxZero.Base.MVP;
+using UnityEngine;
+using UnityEngine.UI;
+using Zenject;
+
+namespace #NAMESPACE#
+{
+    public class #SCRIPTNAME#View : BaseView, I#SCRIPTNAME#View
+    {
+#pragma warning disable 0649
+
+        [SerializeField]
+        private Button _closeButton;
+
+#pragma warning restore 0649
+
+        public event Action OnCloseButtonPressed;
+
+        [Inject]
+        private void Construct(#SCRIPTNAME#PresenterFactory presenterFactory)
+        {
+            Presenter = presenterFactory.Create(this);
+        }
+	
+	private void CloseButtonPressed()
+        {
+            OnCloseButtonPressed?.Invoke();
+        }
+
+        protected override void SubscribeOnEvents()
+        {
+	    _closeButton.onClick.AddListener(CloseButtonPressed);
+        }
+
+        protected override void UnsubscribeOnEvents()
+        {
+	    _closeButton.onClick.RemoveListener(CloseButtonPressed);
+        }
+
+    }
+
+    public interface I#SCRIPTNAME#View
+    {
+        event Action OnCloseButtonPressed;
+    }
+
+    public class #SCRIPTNAME#Presenter : BasePresenter
+    {
+        private readonly I#SCRIPTNAME#View _view;
+
+        public #SCRIPTNAME#Presenter(I#SCRIPTNAME#View view)
+        {
+            _view = view;
+        }
+
+        private void Close()
+        {
+
+        }
+
+        protected override void SubscribeOnViewEvents()
+        {
+            _view.OnCloseButtonPressed += Close;
+        }
+
+        protected override void UnsubscribeOnViewEvents()
+        {
+            _view.OnCloseButtonPressed -= Close;
+        }
+
+        #region Factory
+
+        public class Factory : PlaceholderFactory<I#SCRIPTNAME#View, BasePresenter>
+        {
+        }
+
+        #endregion Factory
+    }
+
+    public class #SCRIPTNAME#PresenterFactory
+    {
+        private readonly #SCRIPTNAME#Presenter.Factory _factory;
+
+        public #SCRIPTNAME#PresenterFactory(#SCRIPTNAME#Presenter.Factory factory)
+        {
+            _factory = factory;
+        }
+
+        public BasePresenter Create(I#SCRIPTNAME#View view)
+        {
+            return _factory.Create(view);
+        }
+    }
+
+    public class #SCRIPTNAME#Installer : Installer<#SCRIPTNAME#Installer>
+    {
+	public override void InstallBindings()
+        {
+	   Container.BindFactory<I#SCRIPTNAME#View, BasePresenter, #SCRIPTNAME#Presenter.Factory>()
+                .To<#SCRIPTNAME#Presenter>()
+                .WhenInjectedInto<#SCRIPTNAME#PresenterFactory>();
+
+            Container.Bind<#SCRIPTNAME#PresenterFactory>()
+                .ToSelf()
+                .AsSingle()
+                .WhenInjectedInto(typeof(I#SCRIPTNAME#View));
+	}
+    }
+
+}
+
+
+
+
+

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80c78c0223e06284dbf7019535ceee7d, type: 3}
+  m_Name: ApplicationSettingsInstaller
+  m_EditorClassIdentifier: 
+  _applicationInstallerSettings:
+    IsDebugMode: 0
+    IsIPadUI: 0
+    IsSafeAreaUI: 0
+    IsDebugInternetNotAvailable: 0
+  _mainConfig:
+    MainSceneName: MainMenu
+    GameplaySceneName: Gameplay
+    LoadingSceneName: Loading
+    OnBoardingSceneName: OnBoardingScene
+    SubscriptionSceneName: SubscribeWindowScene
+  _debugSettings:
+    GraphyPrefab: {fileID: 177638, guid: 0abab5bb77339e4428787a870eb31bd3, type: 3}

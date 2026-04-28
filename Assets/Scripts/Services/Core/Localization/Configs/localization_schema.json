@@ -1,0 +1,27 @@
+{
+  "data": [
+    "Application.Loading",
+    "SettingsScreen.Header",
+    "SettingsScreen.Sounds",
+    "SettingsScreen.Music",
+    "SettingsScreen.Haptic",
+    "SettingsScreen.Support",
+    "SettingsScreen.TermsAndConditions",
+    "SettingsScreen.PrivacyPolicy",
+    "SettingsScreen.RestorePurchase",
+    "Notification.DailyRepeated.Title1",
+    "Notification.DailyRepeated.Description1",
+    "Notification.DailyRepeated.Title2",
+    "Notification.DailyRepeated.Description2",
+    "Notification.DailyRepeated.Title3",
+    "Notification.DailyRepeated.Description3",
+    "Notification.DailyRepeated.Title4",
+    "Notification.DailyRepeated.Description4",
+    "Notification.DailyRepeated.Title5",
+    "Notification.DailyRepeated.Description5",
+    "Notification.DailyRepeated.Title6",
+    "Notification.DailyRepeated.Description6",
+    "Notification.DailyRepeated.Title7",
+    "Notification.DailyRepeated.Description7"
+  ]
+}
