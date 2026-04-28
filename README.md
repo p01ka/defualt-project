@@ -1,0 +1,1 @@
+Паттерны: DI (Zenject), MVP, двухуровневый FSM, Signal Bus, Strategy, Facade, Factory (PlaceholderFactory), Object Pool, Observer (C# events), Adapter, Command (FSM-команды), Null Object/Mock, Interface Segregation.
